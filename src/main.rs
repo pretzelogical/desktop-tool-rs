@@ -4,35 +4,33 @@
 
 
 fn main() {
-    let config = Config::build();
-    println!("search_dirs = {:#?}", config.config_file.search_dirs);
-    println!("target = {}", config.target);
-}
-
-#[derive(Debug)]
-struct Config {
-    config_file: Box<ConfigFile>,
-    target: String,
-}
-
-impl Config {
-    fn build() -> Config {
-        Config {
-            config_file: Box::new(ConfigFile::build()),
-            target: String::from("pgadmin4")
-        }
+    let config = dtconfig::Config::build();
+    match config.target {
+        Some(target) => println!("target = {target}"),
+        _ => ()
+    }
+    match config.search_dirs {
+        Some(search_dirs) => println!("search_dirs = {:?}", search_dirs),
+        _ => ()
     }
 }
 
-#[derive(Debug)]
-struct ConfigFile {
-    search_dirs: Vec<String>
-}
+mod dtconfig {
+    use merge::Merge;
 
-impl ConfigFile {
-    fn build() -> ConfigFile {
-        ConfigFile {
-            search_dirs: vec![String::from("/usr/bin/applications")]
+    #[derive(Debug, Clone, Merge)]
+    pub struct Config {
+        pub target: Option<String>,
+        pub search_dirs: Option<Vec<String>>
+    }
+    
+    impl Config {
+        pub fn build() -> Config {
+    
+            Config {
+                target: Some(String::from("pgadmin4")),
+                search_dirs: Some(vec![String::from("/usr/share/applications")])
+            }
         }
     }
 }
