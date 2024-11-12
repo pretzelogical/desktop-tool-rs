@@ -21,8 +21,8 @@ fn search_for_file(config: &Config) {
         for file_path in dir {
             match file_path {
                 Ok(file_path) => {
-                    if let Some(_file) = check_file(file_path, target) {
-                        return;
+                    if let Some(file) = check_file(file_path, target) {
+                        find_exec(file);
                     }
                 },
                 Err(error) => panic_any(error.to_string())
@@ -44,4 +44,20 @@ fn check_file(file_path: DirEntry, target: &String) -> Option<DirEntry> {
         return Some(file_path);
     }
     return None;
+}
+
+
+fn find_exec(file_path: DirEntry) {
+    let contents = std::fs::read_to_string(
+            file_path.path()
+        )
+        .expect("Error reading target file");
+
+    let exec_line: String = contents
+        .split('\n')
+        .filter(| x | { x.contains("Exec=")} )
+        .take(1)
+        .collect();
+
+    println!("Exec line: {exec_line}");
 }
