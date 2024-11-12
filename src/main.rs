@@ -1,15 +1,14 @@
 mod dt_config;
 use nix::unistd;
-use toml::value::Array;
-use std::{ffi::CString, fs::DirEntry, panic::panic_any};
+use std::{ffi::CString, fs::DirEntry, panic::panic_any, process::exit};
 
 use dt_config::Config;
 
 
 fn main() {
     let config = Config::build();
-    println!("final config = {:?}", config);
     search_for_file(&config);
+    exit(1);
 }
 
 fn search_for_file(config: &Config) {
@@ -35,7 +34,6 @@ fn search_for_file(config: &Config) {
 }
 
 fn check_file(file_path: DirEntry, target: &String) -> Option<DirEntry> {
-    println!("{:?}", file_path);
     let file_name_os = file_path
         .file_name();
     let file_name = file_name_os
@@ -43,7 +41,6 @@ fn check_file(file_path: DirEntry, target: &String) -> Option<DirEntry> {
         .expect("Error parsing dir!");
 
     if file_name.ends_with(".desktop") && file_name.contains(target) {
-        println!("Found target {target}");
         return Some(file_path);
     }
     return None;
@@ -61,8 +58,6 @@ fn find_exec(file_path: DirEntry) -> String {
         .filter(| x | { x.contains("Exec=")} )
         .take(1)
         .collect();
-
-    println!("Exec line: {exec_line}");
 
     exec_line.split('=').skip(1).collect()
 }

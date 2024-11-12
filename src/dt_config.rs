@@ -35,13 +35,6 @@ impl Config {
         // let mut file_config = Config::from_file();
         let mut config: Config = Default::default();
 
-        for dir in DEFAULT_DIRS {
-            let ndir = dir.to_string();
-            println!("{ndir}");
-        }
-
-        println!("cli config = {:?}", cli_config);
-
         config.merge(cli_config);
         config
     }
@@ -57,7 +50,6 @@ impl Config {
                 continue;
             }
             if option_arg != "" {
-                println!("option arg = {option_arg}");
                 match option_arg.as_str() {
                     "--search-dirs" => config.search_dirs.push(arg.clone()),
                     _ => println!("Invalid option argument"),
